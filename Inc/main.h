@@ -50,6 +50,9 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_hal.h"
 
+#define MSG_SIZE 64
+#define TIMEOUT_1_SEC 10000
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -69,6 +72,14 @@ extern "C" {
 /* USER CODE BEGIN EM */
 
 /* USER CODE END EM */
+
+/* Exported global variables -------------------------------------------------*/
+extern RTC_HandleTypeDef hrtc;
+extern SPI_HandleTypeDef hspi2;
+extern UART_HandleTypeDef huart2;
+
+extern char msg[MSG_SIZE];
+extern uint16_t msg_size;
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);

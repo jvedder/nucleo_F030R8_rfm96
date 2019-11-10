@@ -11,6 +11,8 @@
 #ifndef RFM96_h
 #define RFM96_h
 
+/* Public define -------------------------------------------------------------*/
+
 // Max number of octets the LORA Rx/Tx FIFO can hold
 #define RFM96_FIFO_SIZE 255
 
@@ -224,6 +226,11 @@
 #define RFM96_PA_DAC_DISABLE                        0x04
 #define RFM96_PA_DAC_ENABLE                         0x07
 
+/* Public function prototypes ------------------------------------------------*/
+
+uint8_t RFM96_Read( uint8_t reg );
+void RFM96_Write( uint8_t reg, uint8_t data );
+void Delay_ms( int n );
 
 #endif
 
