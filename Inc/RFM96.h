@@ -228,8 +228,13 @@
 
 /* Public function prototypes ------------------------------------------------*/
 
-uint8_t RFM96_Read( uint8_t reg );
-void RFM96_Write( uint8_t reg, uint8_t data );
+void RFM96_Init( void );
+void RFM96_Send(const uint8_t* data, uint8_t len);
+uint8_t RFM96_GetMode( void );
+void RFM96_ClearInt( void );
+
+uint8_t RFM96_ReadReg( uint8_t reg );
+void RFM96_WriteReg( uint8_t reg, uint8_t data );
 void Delay_ms( int n );
 
 #endif

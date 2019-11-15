@@ -86,6 +86,12 @@ static void MX_USART2_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_NVIC_Init(void);
+
+static void printPins( void );
+
+static GPIO_PinState p1;
+static GPIO_PinState p2;
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 
@@ -132,13 +138,10 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_UART_Transmit(&huart2, (uint8_t *) &"\r\nPOR\r\n", 5, TIMEOUT_1_SEC);
+  print("\r\nPOR");
+  //HAL_UART_Transmit(&huart2, (uint8_t *) &"\r\nPOR\r\n", 7, TIMEOUT_1_SEC);
 
-  // Reset_N the RFM96
-	HAL_GPIO_WritePin(SPI2_RST_GPIO_Port, SPI2_RST_Pin, GPIO_PIN_RESET);
-	Delay_ms(10);
-	HAL_GPIO_WritePin(SPI2_RST_GPIO_Port, SPI2_RST_Pin, GPIO_PIN_SET);
-	Delay_ms(10);
+  RFM96_Init();
 
   /* USER CODE END 2 */
 
@@ -146,30 +149,26 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //RFM96_Write(RFM96_REG_01_OP_MODE, RFM96_MODE_SLEEP);
 
-	  // Set sleep mode, so we can also set LORA mode:
-	  RFM96_Write(RFM96_REG_01_OP_MODE, RFM96_MODE_SLEEP | RFM96_LONG_RANGE_MODE);
+	  printPins();
 
-	  Delay_ms(100);
+	  print("Send...");
+	  RFM96_Send((uint8_t *) "JV", 2);
 
-	  //read back operation mode
-	  RFM96_Read(RFM96_REG_01_OP_MODE);
+	  printPins();
 
-	  Delay_ms(100);
+	  print1("Mode:", RFM96_GetMode());
 
-	  // Set sleep mode, so we can also set LORA mode:
-	  RFM96_Write(RFM96_REG_01_OP_MODE, 0xC3);
+	  print("delay");
+	  Delay_ms(1000);
 
-	  Delay_ms(100);
+	  print1("Mode:", RFM96_GetMode());
 
-	  //read back operation mode
-	  RFM96_Read(RFM96_REG_01_OP_MODE);
-
-	  Delay_ms(100);
+	  print("clearInt");
+	  RFM96_ClearInt();
 
 
-	  /* USER CODE END WHILE */
+	/* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
@@ -393,11 +392,49 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI2_CS_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : MODE0_Pin */
+  GPIO_InitStruct.Pin = MODE0_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(MODE0_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : SPI2_INT_Pin */
+  GPIO_InitStruct.Pin = SPI2_INT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(SPI2_INT_GPIO_Port, &GPIO_InitStruct);
+
 }
 
 /* USER CODE BEGIN 4 */
 
+void print(const char *text)
+{
+	  sprintf(msg, "%s\r\n", text );
+	  msg_size = strlen(msg);
+	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
+}
 
+void print1(const char *text, uint8_t x)
+{
+	  sprintf(msg, "%s 0x%02X\r\n", text, (int) x );
+	  msg_size = strlen(msg);
+	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
+}
+
+void print2(const char *text, uint8_t x, uint8_t y)
+{
+	  sprintf(msg, "%s 0x%02X 0x%02X\r\n", text, (int) x, (int) y );
+	  msg_size = strlen(msg);
+	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
+}
+
+static void printPins( void )
+{
+	  p1 = HAL_GPIO_ReadPin(SPI2_INT_GPIO_Port, SPI2_INT_Pin);
+	  p2 = HAL_GPIO_ReadPin(MODE0_GPIO_Port, MODE0_Pin);
+	  print2("Pins:", (uint8_t) p1, (uint8_t) p2);
+}
 
 /* USER CODE END 4 */
 

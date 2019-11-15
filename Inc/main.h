@@ -85,6 +85,10 @@ extern uint16_t msg_size;
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
+void print(const char *text);
+void print1(const char *text, uint8_t x );
+void print2(const char *text, uint8_t x, uint8_t y);
+
 
 /* USER CODE END EFP */
 
@@ -100,8 +104,12 @@ void Error_Handler(void);
 #define GRN_LED_GPIO_Port GPIOA
 #define SPI2_CS_Pin GPIO_PIN_12
 #define SPI2_CS_GPIO_Port GPIOB
+#define MODE0_Pin GPIO_PIN_8
+#define MODE0_GPIO_Port GPIOC
 #define SPI2_RST_Pin GPIO_PIN_11
 #define SPI2_RST_GPIO_Port GPIOA
+#define SPI2_INT_Pin GPIO_PIN_12
+#define SPI2_INT_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
