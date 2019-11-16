@@ -100,8 +100,8 @@ void printstr(const char *text, uint8_t * data);
 #define UART2_TX_GPIO_Port GPIOA
 #define UART2_RX_Pin GPIO_PIN_3
 #define UART2_RX_GPIO_Port GPIOA
-#define RED_LED_Pin GPIO_PIN_5
-#define RED_LED_GPIO_Port GPIOA
+#define GRN_LED_Pin GPIO_PIN_5
+#define GRN_LED_GPIO_Port GPIOA
 #define SPI2_CS_Pin GPIO_PIN_12
 #define SPI2_CS_GPIO_Port GPIOB
 #define MODE0_Pin GPIO_PIN_8
