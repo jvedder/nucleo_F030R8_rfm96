@@ -159,7 +159,7 @@ int main(void)
 
 		  print("--SEND--");
 
-		  RFM96_Send((uint8_t *) "JV", 2);
+		  RFM96_Send((uint8_t *) "0123456789ABCDEF", 16);
 
 		  // turn off LED after 100ms (pulses = Tx mode)
 		  Delay_ms(100);
