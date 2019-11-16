@@ -230,6 +230,7 @@
 
 void RFM96_Init( void );
 void RFM96_Send(const uint8_t* data, uint8_t len);
+void RFM96_Receive(const uint8_t* data, uint8_t maxlen);
 uint8_t RFM96_GetMode( void );
 void RFM96_ClearInt( void );
 

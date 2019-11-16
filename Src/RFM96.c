@@ -113,6 +113,38 @@ void RFM96_Send(const uint8_t* data, uint8_t len)
     return;
 }
 
+void RFM96_Receive(const uint8_t* data, uint8_t maxlen)
+{
+	print1("RxCurAddr", RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR));
+
+	RFM96_WriteReg(RFM96_REG_01_OP_MODE, RFM96_MODE_RXCONTINUOUS);
+
+	// Set Interrupt on DIO0 to RxDone
+	RFM96_WriteReg(RFM96_REG_40_DIO_MAPPING1, 0x00); // Interrupt on RxDone
+
+	print("WFI...");
+	// wait for interrupt
+	while (! HAL_GPIO_ReadPin(SPI2_INT_GPIO_Port, SPI2_INT_Pin))
+	{
+		//spin wait
+	}
+
+	// Read the interrupt register
+	print1("IRQ Flags:", RFM96_ReadReg(RFM96_REG_12_IRQ_FLAGS));
+
+	// clear all the IRQ flags
+	RFM96_WriteReg( RFM96_REG_12_IRQ_FLAGS, 0xFF );
+
+	// Number of bytes received
+	print1("RxNbrBytes:", RFM96_ReadReg(RFM96_REG_13_RX_NB_BYTES));
+	print1("RxCurAddr: ", RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR));
+
+	// Remember the last signal to noise ratio, LORA mode
+	// Per page 111, SX1276/77/78/79 datasheet
+	print1("SNR: ", RFM96_ReadReg(RFM96_REG_19_PKT_SNR_VALUE));
+	print1("RSSI:", RFM96_ReadReg(RFM96_REG_1A_PKT_RSSI_VALUE));
+}
+
 uint8_t RFM96_GetMode( void )
 {
 	uint8_t mode = RFM96_ReadReg( RFM96_REG_01_OP_MODE );
@@ -121,7 +153,7 @@ uint8_t RFM96_GetMode( void )
 
 void RFM96_ClearInt( void )
 {
-	// set to clear the IRQ bits
+	// set to clear all the IRQ bits
 	RFM96_WriteReg( RFM96_REG_12_IRQ_FLAGS, 0xFF );
 }
 
@@ -157,8 +189,7 @@ uint8_t RFM96_ReadReg( uint8_t reg )
 		// handle errors here
 	}
 
-	print2("RFM96 RD", reg, data );
-
+	//print2("RFM96 RD", reg, data );
 
 	// Set CS high (inactive)
 	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
@@ -170,7 +201,7 @@ void RFM96_WriteReg( uint8_t reg, uint8_t data )
 {
 	HAL_StatusTypeDef status;
 
-	print2("RFM96 WR", reg, data );
+	//print2("RFM96 WR", reg, data );
 
 	//set the reg msb for write
 	reg |= 0x80;

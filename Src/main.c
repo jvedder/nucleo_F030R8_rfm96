@@ -87,10 +87,8 @@ static void MX_RTC_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_NVIC_Init(void);
 
-static void printPins( void );
-
-static GPIO_PinState p1;
-static GPIO_PinState p2;
+static uint8_t mode;
+static uint8_t buffer[64];
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -143,35 +141,36 @@ int main(void)
 
   RFM96_Init();
 
+  mode = (uint8_t) HAL_GPIO_ReadPin(MODE0_GPIO_Port, MODE0_Pin);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
+  if (mode)
   {
+	  // Tx Mode
+	  while (1)
+	  {
+		  print("--SEND--");
 
-	  printPins();
+		  RFM96_Send((uint8_t *) "JV", 2);
+		  Delay_ms(1000);
+		  RFM96_ClearInt();
 
-	  print("Send...");
-	  RFM96_Send((uint8_t *) "JV", 2);
+		/* USER CODE END WHILE */
 
-	  printPins();
-
-	  print1("Mode:", RFM96_GetMode());
-
-	  print("delay");
-	  Delay_ms(1000);
-
-	  print1("Mode:", RFM96_GetMode());
-
-	  print("clearInt");
-	  RFM96_ClearInt();
-
-
-	/* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-
+		/* USER CODE BEGIN 3 */
+	  }
+  }
+  else
+  {
+	  // Rx Mode
+	  while(1)
+	  {
+		  print("--RECV--");
+		  RFM96_Receive(buffer, 64);
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -374,7 +373,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : USER_BUTTON_Pin */
   GPIO_InitStruct.Pin = USER_BUTTON_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
@@ -427,13 +426,6 @@ void print2(const char *text, uint8_t x, uint8_t y)
 	  sprintf(msg, "%s 0x%02X 0x%02X\r\n", text, (int) x, (int) y );
 	  msg_size = strlen(msg);
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
-}
-
-static void printPins( void )
-{
-	  p1 = HAL_GPIO_ReadPin(SPI2_INT_GPIO_Port, SPI2_INT_Pin);
-	  p2 = HAL_GPIO_ReadPin(MODE0_GPIO_Port, MODE0_Pin);
-	  print2("Pins:", (uint8_t) p1, (uint8_t) p2);
 }
 
 /* USER CODE END 4 */
