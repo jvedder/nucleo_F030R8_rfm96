@@ -154,13 +154,20 @@ int main(void)
 	  // Tx Mode
 	  while (1)
 	  {
-		  toggle = 1 - toggle;
-		  HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, toggle);
+		  // turn on LED
+		  HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_SET);
 
 		  print("--SEND--");
 
 		  RFM96_Send((uint8_t *) "JV", 2);
-		  Delay_ms(1000);
+
+		  // turn off LED after 100ms (pulses = Tx mode)
+		  Delay_ms(100);
+		  HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_RESET);
+
+		  // wait a full second
+		  Delay_ms(900);
+
 		  RFM96_ClearInt();
 
 		/* USER CODE END WHILE */

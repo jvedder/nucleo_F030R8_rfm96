@@ -124,14 +124,27 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 
 	print("WFI...");
 	// wait for interrupt
+	uint32_t start_time_ms = HAL_GetTick();
 	while (! HAL_GPIO_ReadPin(SPI2_INT_GPIO_Port, SPI2_INT_Pin))
 	{
 		//spin wait
+
+		//turn off the LED after 1000 msec
+		if( (HAL_GetTick() - start_time_ms) > 1000)
+		{
+			HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_RESET);
+		}
 	}
 
 	// Read the interrupt register
 	uint8_t irq_flags = RFM96_ReadReg(RFM96_REG_12_IRQ_FLAGS);
 	print1("IRQ Flags:", irq_flags);
+
+	if ( (irq_flags & RFM96_PAYLOAD_CRC_ERROR) == 0)
+	{
+		// turn on LED if good CRC
+		HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_SET);
+	}
 
 	// Number of bytes received
 	uint8_t start = RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR);
