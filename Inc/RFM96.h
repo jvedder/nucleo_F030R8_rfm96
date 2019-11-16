@@ -238,7 +238,7 @@ void RFM96_ClearInt( void );
 
 uint8_t RFM96_ReadReg( uint8_t reg );
 void RFM96_WriteReg( uint8_t reg, uint8_t data );
-void Delay_ms( int n );
+void Delay_ms( uint32_t delay_ms );
 
 #endif
 

@@ -129,8 +129,8 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 	{
 		//spin wait
 
-		//turn off the LED after 1000 msec
-		if( (HAL_GetTick() - start_time_ms) > 1000)
+		//turn off the LED after 900 msec (pullse off 100ms in 1 sec Tx cycle)
+		if( (HAL_GetTick() - start_time_ms) > 900)
 		{
 			HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_RESET);
 		}
@@ -253,15 +253,18 @@ void RFM96_WriteReg( uint8_t reg, uint8_t data )
 	HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
 }
 
-//TODO: Refactor this to use systick
-void Delay_ms( int n )
-{
-	const uint32_t TIMEOUT = 9600; // Estimated for 1 ms
 
-	while(n--)
+void Delay_ms( uint32_t delay_ms )
+{
+	/**
+	 * This should correctly handle SysTic roll-overs.
+	 * See:
+	 *   https://stackoverflow.com/questions/61443/rollover-safe-timer-tick-comparisons
+	 */
+	uint32_t start_time_ms = HAL_GetTick();
+	while ( (HAL_GetTick() - start_time_ms) < delay_ms)
 	{
-		volatile uint32_t tick = TIMEOUT;
-		while(tick--);
+		// spin wait
 	}
 
 	return;
