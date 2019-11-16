@@ -113,7 +113,7 @@ void RFM96_Send(const uint8_t* data, uint8_t len)
     return;
 }
 
-void RFM96_Receive(const uint8_t* data, uint8_t maxlen)
+void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 {
 	print1("RxCurAddr", RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR));
 
@@ -130,17 +130,28 @@ void RFM96_Receive(const uint8_t* data, uint8_t maxlen)
 	}
 
 	// Read the interrupt register
-	print1("IRQ Flags:", RFM96_ReadReg(RFM96_REG_12_IRQ_FLAGS));
+	uint8_t irq_flags = RFM96_ReadReg(RFM96_REG_12_IRQ_FLAGS);
+	print1("IRQ Flags:", irq_flags);
+
+	// Number of bytes received
+	uint8_t start = RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR);
+	uint8_t len = RFM96_ReadReg(RFM96_REG_13_RX_NB_BYTES);
+	print1("RxCurAddr: ", start);
+	print1("RxNbrBytes:", len);
+
+	// get the read data
+	if (len > (maxlen-1)) len = maxlen-1;
+	RFM96_WriteReg(RFM96_REG_0D_FIFO_ADDR_PTR, start);
+	for (int i = 0; i < len; i++)
+	{
+		data[i] = RFM96_ReadReg(RFM96_REG_00_FIFO);
+	}
+	data[len] = '\0';
 
 	// clear all the IRQ flags
 	RFM96_WriteReg( RFM96_REG_12_IRQ_FLAGS, 0xFF );
 
-	// Number of bytes received
-	print1("RxNbrBytes:", RFM96_ReadReg(RFM96_REG_13_RX_NB_BYTES));
-	print1("RxCurAddr: ", RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR));
-
-	// Remember the last signal to noise ratio, LORA mode
-	// Per page 111, SX1276/77/78/79 datasheet
+	// Report the SNR and RSSI
 	print1("SNR: ", RFM96_ReadReg(RFM96_REG_19_PKT_SNR_VALUE));
 	print1("RSSI:", RFM96_ReadReg(RFM96_REG_1A_PKT_RSSI_VALUE));
 }

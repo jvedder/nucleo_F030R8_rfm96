@@ -88,6 +88,7 @@ void Error_Handler(void);
 void print(const char *text);
 void print1(const char *text, uint8_t x );
 void print2(const char *text, uint8_t x, uint8_t y);
+void printstr(const char *text, uint8_t * data);
 
 
 /* USER CODE END EFP */

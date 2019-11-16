@@ -199,6 +199,7 @@
 #define RFM96_CODING_RATE_4_7                       0x06
 #define RFM96_CODING_RATE_4_8                       0x08
 #define RFM96_IMPLICIT_HEADER_MODE_ON               0x01
+#define RFM96_IMPLICIT_HEADER_MODE_OFF              0x00
 
 // RFM96_REG_1E_MODEM_CONFIG2                       0x1e
 #define RFM96_SPREADING_FACTOR                      0xf0
@@ -209,9 +210,10 @@
 #define RFM96_SPREADING_FACTOR_1024CPS              0xa0
 #define RFM96_SPREADING_FACTOR_2048CPS              0xb0
 #define RFM96_SPREADING_FACTOR_4096CPS              0xc0
-#define RFM96_TX_CONTINUOUS_MOE                     0x08
+#define RFM96_TX_CONTINUOUS_MODE                    0x08
 
 #define RFM96_PAYLOAD_CRC_ON                        0x04
+#define RFM96_PAYLOAD_CRC_OFF                       0x00
 #define RFM96_SYM_TIMEOUT_MSB                       0x03
 
 // RFM96_REG_26_MODEM_CONFIG3
@@ -230,7 +232,7 @@
 
 void RFM96_Init( void );
 void RFM96_Send(const uint8_t* data, uint8_t len);
-void RFM96_Receive(const uint8_t* data, uint8_t maxlen);
+void RFM96_Receive(uint8_t* data, uint8_t maxlen);
 uint8_t RFM96_GetMode( void );
 void RFM96_ClearInt( void );
 

@@ -170,6 +170,7 @@ int main(void)
 	  {
 		  print("--RECV--");
 		  RFM96_Receive(buffer, 64);
+		  printstr("data:", buffer);
 	  }
   }
   /* USER CODE END 3 */
@@ -424,6 +425,13 @@ void print1(const char *text, uint8_t x)
 void print2(const char *text, uint8_t x, uint8_t y)
 {
 	  sprintf(msg, "%s 0x%02X 0x%02X\r\n", text, (int) x, (int) y );
+	  msg_size = strlen(msg);
+	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
+}
+
+void printstr(const char *text, uint8_t * data)
+{
+	  sprintf(msg, "%s: %s\r\n", text, (char *) data );
 	  msg_size = strlen(msg);
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
