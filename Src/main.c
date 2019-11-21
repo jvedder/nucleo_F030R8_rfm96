@@ -75,8 +75,10 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+
 char msg[MSG_SIZE];
 uint16_t msg_size;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -142,13 +144,46 @@ int main(void)
 
   RFM96_Init();
 
-  mode = (uint8_t) HAL_GPIO_ReadPin(MODE0_GPIO_Port, MODE0_Pin);
+  mode = (uint8_t) HAL_GPIO_ReadPin(MODE_TX_GPIO_Port, MODE_TX_Pin);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   toggle = 0;
+
+  // Test of beeping a piezo using class D output
+  while (1)
+  {
+	  uint32_t start;
+	  uint32_t tick;
+
+	  start = HAL_GetTick();
+	  do
+	  {
+		  tick = HAL_GetTick();
+		  int b = tick & 0x01;
+		  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, b);
+		  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, 1-b);
+	  } while((tick - start) < 80);
+
+	  mode = (uint8_t) HAL_GPIO_ReadPin(MODE_TX_GPIO_Port, MODE_TX_Pin);
+	  if (mode)
+	  {
+		  Delay_ms(80);
+		  start = HAL_GetTick();
+		  do
+		  {
+			  tick = HAL_GetTick();
+			  int b = tick & 0x01;
+			  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, b);
+			  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, 1-b);
+		  } while((tick - start) < 80);
+	  }
+	  Delay_ms(800);
+  }
+
+
   if (mode)
   {
 	  // Tx Mode
@@ -317,7 +352,7 @@ static void MX_SPI2_Init(void)
   hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
   hspi2.Init.CRCPolynomial = 7;
   hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi2.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
+  hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
   if (HAL_SPI_Init(&hspi2) != HAL_OK)
   {
     Error_Handler();
@@ -379,7 +414,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GRN_LED_Pin|SPI2_RST_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GRN_LED_Pin|BUZZ_N_Pin|BUZZ_P_Pin|SPI2_RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI2_CS_GPIO_Port, SPI2_CS_Pin, GPIO_PIN_SET);
@@ -390,8 +425,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : GRN_LED_Pin SPI2_RST_Pin */
-  GPIO_InitStruct.Pin = GRN_LED_Pin|SPI2_RST_Pin;
+  /*Configure GPIO pins : GRN_LED_Pin BUZZ_N_Pin BUZZ_P_Pin SPI2_RST_Pin */
+  GPIO_InitStruct.Pin = GRN_LED_Pin|BUZZ_N_Pin|BUZZ_P_Pin|SPI2_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -404,11 +439,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SPI2_CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : MODE0_Pin */
-  GPIO_InitStruct.Pin = MODE0_Pin;
+  /*Configure GPIO pin : MODE_TX_Pin */
+  GPIO_InitStruct.Pin = MODE_TX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(MODE0_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(MODE_TX_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : SPI2_INT_Pin */
   GPIO_InitStruct.Pin = SPI2_INT_Pin;

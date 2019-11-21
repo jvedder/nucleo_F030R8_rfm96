@@ -90,6 +90,10 @@ void Error_Handler(void);
 #define SPI2_CS_GPIO_Port GPIOB
 #define MODE_TX_Pin GPIO_PIN_8
 #define MODE_TX_GPIO_Port GPIOC
+#define BUZZ_N_Pin GPIO_PIN_8
+#define BUZZ_N_GPIO_Port GPIOA
+#define BUZZ_P_Pin GPIO_PIN_9
+#define BUZZ_P_GPIO_Port GPIOA
 #define SPI2_RST_Pin GPIO_PIN_11
 #define SPI2_RST_GPIO_Port GPIOA
 #define SPI2_INT_Pin GPIO_PIN_12
