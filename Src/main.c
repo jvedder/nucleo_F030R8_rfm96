@@ -157,29 +157,28 @@ int main(void)
   {
 	  uint32_t start;
 	  uint32_t tick;
+	  uint32_t mask;
+
+	  mode = (uint8_t) HAL_GPIO_ReadPin(MODE_TX_GPIO_Port, MODE_TX_Pin);
+	  mask = mode ? 1 : 4;
 
 	  start = HAL_GetTick();
 	  do
 	  {
 		  tick = HAL_GetTick();
-		  int b = tick & 0x01;
-		  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, b);
-		  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, 1-b);
+		  if (tick & mask)
+		  {
+			  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_RESET);
+		  	  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_SET);
+		  }
+		  else
+		  {
+			  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_SET);
+		  	  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_RESET);
+
+		  }
 	  } while((tick - start) < 80);
 
-	  mode = (uint8_t) HAL_GPIO_ReadPin(MODE_TX_GPIO_Port, MODE_TX_Pin);
-	  if (mode)
-	  {
-		  Delay_ms(80);
-		  start = HAL_GetTick();
-		  do
-		  {
-			  tick = HAL_GetTick();
-			  int b = tick & 0x01;
-			  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, b);
-			  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, 1-b);
-		  } while((tick - start) < 80);
-	  }
 	  Delay_ms(800);
   }
 
