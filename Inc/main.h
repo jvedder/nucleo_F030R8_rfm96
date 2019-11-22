@@ -89,7 +89,7 @@ void print(const char *text);
 void print1(const char *text, uint8_t x );
 void print2(const char *text, uint8_t x, uint8_t y);
 void printstr(const char *text, uint8_t * data);
-
+void beep(uint32_t duration_ms, uint8_t pitch);
 
 /* USER CODE END EFP */
 

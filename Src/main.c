@@ -155,31 +155,13 @@ int main(void)
   // Test of beeping a piezo using class D output
   while (1)
   {
-	  uint32_t start;
-	  uint32_t tick;
-	  uint32_t mask;
-
-	  mode = (uint8_t) HAL_GPIO_ReadPin(MODE_TX_GPIO_Port, MODE_TX_Pin);
-	  mask = mode ? 1 : 4;
-
-	  start = HAL_GetTick();
-	  do
+	  for (int i = 0; i<4; i++)
 	  {
-		  tick = HAL_GetTick();
-		  if (tick & mask)
-		  {
-			  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_RESET);
-		  	  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_SET);
-		  }
-		  else
-		  {
-			  HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_SET);
-		  	  HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_RESET);
-
-		  }
-	  } while((tick - start) < 80);
-
-	  Delay_ms(800);
+		  print1("Pitch:", i);
+		  beep(80, i);
+		  Delay_ms(800);
+	  }
+	  Delay_ms(2000);
   }
 
 
@@ -480,6 +462,37 @@ void printstr(const char *text, uint8_t * data)
 	  sprintf(msg, "%s: %s\r\n", text, (char *) data );
 	  msg_size = strlen(msg);
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
+}
+
+/* set pitch to 0,1,2,3 with 0 highest pitch */
+void beep(uint32_t duration_ms, uint8_t pitch)
+{
+	uint32_t tick;
+
+	uint32_t mask = (1 << pitch);
+
+	uint32_t start = HAL_GetTick();
+	do {
+		tick = HAL_GetTick();
+		if (tick & mask)
+		{
+			// Piezo/Speaker positive voltage
+			HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_RESET);
+		}
+		else
+		{
+			// Piezo/Speaker negative voltage
+			HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_SET);
+		}
+	} while ((tick - start) < duration_ms);
+
+	// Peizo/Speaker zero voltage
+	HAL_GPIO_WritePin(BUZZ_P_GPIO_Port, BUZZ_P_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(BUZZ_N_GPIO_Port, BUZZ_N_Pin, GPIO_PIN_RESET);
+
+	return;
 }
 
 /* USER CODE END 4 */
