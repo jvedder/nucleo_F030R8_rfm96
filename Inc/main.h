@@ -75,7 +75,7 @@ extern "C" {
 
 /* Exported global variables -------------------------------------------------*/
 extern RTC_HandleTypeDef hrtc;
-extern SPI_HandleTypeDef hspi2;
+extern SPI_HandleTypeDef hspi1;
 extern UART_HandleTypeDef huart2;
 
 extern char msg[MSG_SIZE];
@@ -96,28 +96,40 @@ void beep(uint32_t duration_ms, uint8_t pitch);
 /* Private defines -----------------------------------------------------------*/
 #define USER_BUTTON_Pin GPIO_PIN_13
 #define USER_BUTTON_GPIO_Port GPIOC
-#define UART2_TX_Pin GPIO_PIN_2
-#define UART2_TX_GPIO_Port GPIOA
-#define UART2_RX_Pin GPIO_PIN_3
-#define UART2_RX_GPIO_Port GPIOA
-#define GRN_LED_Pin GPIO_PIN_5
-#define GRN_LED_GPIO_Port GPIOA
-#define SPI2_CS_Pin GPIO_PIN_12
-#define SPI2_CS_GPIO_Port GPIOB
-#define MODE_TX_Pin GPIO_PIN_8
-#define MODE_TX_GPIO_Port GPIOC
+#define RF_RSTN_Pin GPIO_PIN_0
+#define RF_RSTN_GPIO_Port GPIOA
+#define STLINK_TX_Pin GPIO_PIN_2
+#define STLINK_TX_GPIO_Port GPIOA
+#define STLINK_RX_Pin GPIO_PIN_3
+#define STLINK_RX_GPIO_Port GPIOA
+#define RF_SCK_Pin GPIO_PIN_5
+#define RF_SCK_GPIO_Port GPIOA
+#define RF_MISO_Pin GPIO_PIN_6
+#define RF_MISO_GPIO_Port GPIOA
+#define RF_MOSI_Pin GPIO_PIN_7
+#define RF_MOSI_GPIO_Port GPIOA
+#define GRN_LED_Pin GPIO_PIN_13
+#define GRN_LED_GPIO_Port GPIOB
+#define MODE_JUMPER_Pin GPIO_PIN_8
+#define MODE_JUMPER_GPIO_Port GPIOC
 #define BUZZ_N_Pin GPIO_PIN_8
 #define BUZZ_N_GPIO_Port GPIOA
 #define BUZZ_P_Pin GPIO_PIN_9
 #define BUZZ_P_GPIO_Port GPIOA
-#define SPI2_RST_Pin GPIO_PIN_11
-#define SPI2_RST_GPIO_Port GPIOA
-#define SPI2_INT_Pin GPIO_PIN_12
-#define SPI2_INT_GPIO_Port GPIOA
+#define RF_INT0_Pin GPIO_PIN_10
+#define RF_INT0_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
+#define RF_INT1_Pin GPIO_PIN_3
+#define RF_INT1_GPIO_Port GPIOB
+#define RF_INT3_Pin GPIO_PIN_4
+#define RF_INT3_GPIO_Port GPIOB
+#define RF_INT2_Pin GPIO_PIN_5
+#define RF_INT2_GPIO_Port GPIOB
+#define RF_CSN_Pin GPIO_PIN_6
+#define RF_CSN_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -13,6 +13,9 @@
 
 /* Public define -------------------------------------------------------------*/
 
+// Handle for SPI1
+#define hRFSPI	hspi1
+
 // Max number of octets the LORA Rx/Tx FIFO can hold
 #define RFM96_FIFO_SIZE 255
 
