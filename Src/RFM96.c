@@ -55,9 +55,9 @@ void RFM96_Init( void )
     // AgcAutoOn = 0 : LNA gain set by register LnaGain
     RFM96_WriteReg(RFM96_REG_26_MODEM_CONFIG3, 0x04);
 
-    // Preamble Length = 8;
+    // Preamble Length = 16;
     RFM96_WriteReg(RFM96_REG_20_PREAMBLE_MSB, 0x00);
-    RFM96_WriteReg(RFM96_REG_21_PREAMBLE_LSB, 0x08);
+    RFM96_WriteReg(RFM96_REG_21_PREAMBLE_LSB, 0x10);
 
     // Set Frequency = 433 MHz
     //   FRF[23:0] = Freq / Fstep
@@ -76,7 +76,8 @@ void RFM96_Init( void )
     // PaSelect = 1 : PA_BOOST pin (instead of RFO pin).
     // MaxPower = 0 : Pmax=10.8+0.6*MaxPower [dBm]
     // Output Power = 8 : 10dBm from Pout=17-(15-OutputPower) if PaSelect = 1. RadioHead says this is 13 dBm, though
-    RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0x88);
+    //RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0x88);
+    RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0xcf);
 
     return;
 }
@@ -129,7 +130,7 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 	{
 		//spin wait
 
-		//turn off the LED after 900 msec (pullse off 100ms in 1 sec Tx cycle)
+		//turn off the LED after 900 msec (pulse off 100ms in 1 sec Tx cycle)
 		if( (HAL_GetTick() - start_time_ms) > 900)
 		{
 			HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_RESET);
@@ -139,12 +140,6 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 	// Read the interrupt register
 	uint8_t irq_flags = RFM96_ReadReg(RFM96_REG_12_IRQ_FLAGS);
 	print1("IRQ Flags:", irq_flags);
-
-	if ( (irq_flags & RFM96_PAYLOAD_CRC_ERROR) == 0)
-	{
-		// turn on LED if good CRC
-		HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_SET);
-	}
 
 	// Number of bytes received
 	uint8_t start = RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR);
@@ -167,6 +162,20 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 	// Report the SNR and RSSI
 	print1("SNR: ", RFM96_ReadReg(RFM96_REG_19_PKT_SNR_VALUE));
 	print1("RSSI:", RFM96_ReadReg(RFM96_REG_1A_PKT_RSSI_VALUE));
+
+	// if good CRC
+	if ( (irq_flags & RFM96_PAYLOAD_CRC_ERROR) == 0)
+	{
+		// turn on LED
+		HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_SET);
+		// Good beep
+		beep(80,0);
+	}
+	else
+	{
+		// bad BEEEEP
+		beep(160,3);
+	}
 }
 
 uint8_t RFM96_GetMode( void )

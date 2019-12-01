@@ -140,7 +140,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   print("\r\nPOR");
-  //HAL_UART_Transmit(&huart2, (uint8_t *) &"\r\nPOR\r\n", 7, TIMEOUT_1_SEC);
+  beep(250,1);
 
   RFM96_Init();
 
@@ -151,19 +151,6 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   toggle = 0;
-
-  // Test of beeping a piezo using class D output
-  while (1)
-  {
-	  for (int i = 0; i<4; i++)
-	  {
-		  print1("Pitch:", i);
-		  beep(80, i);
-		  Delay_ms(800);
-	  }
-	  Delay_ms(2000);
-  }
-
 
   if (mode)
   {
