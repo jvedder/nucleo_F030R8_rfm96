@@ -126,7 +126,7 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 	print("WFI...");
 	// wait for interrupt
 	uint32_t start_time_ms = HAL_GetTick();
-	while (! HAL_GPIO_ReadPin(RF_INT0_GPIO_Port, RF_INT0_Pin))
+	while (! HAL_GPIO_ReadPin(RF_DIO0_GPIO_Port, RF_DIO0_Pin))
 	{
 		//spin wait
 
@@ -206,7 +206,7 @@ uint8_t RFM96_ReadReg( uint8_t reg )
 	uint8_t data = 0x00;
 
 	// Set CS low (active)
-	HAL_GPIO_WritePin(RF_CSN_GPIO_Port, RF_CSN_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(RF_CS_N_GPIO_Port, RF_CS_N_Pin, GPIO_PIN_RESET);
 
 	// write 8 bit reg and read 8 bit data
 	status = HAL_SPI_TransmitReceive(&hRFSPI, txData, rxData, size, TIMEOUT_1_SEC);
@@ -225,7 +225,7 @@ uint8_t RFM96_ReadReg( uint8_t reg )
 	//print2("RFM96 RD", reg, data );
 
 	// Set CS high (inactive)
-	HAL_GPIO_WritePin(RF_CSN_GPIO_Port, RF_CSN_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(RF_CS_N_GPIO_Port, RF_CS_N_Pin, GPIO_PIN_SET);
 
 	return data;
 }
@@ -245,7 +245,7 @@ void RFM96_WriteReg( uint8_t reg, uint8_t data )
 
 
 	// Set CS low (active)
-	HAL_GPIO_WritePin(RF_CSN_GPIO_Port, RF_CSN_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(RF_CS_N_GPIO_Port, RF_CS_N_Pin, GPIO_PIN_RESET);
 
 	// write 8 bit reg and read 8 bit data
 	status = HAL_SPI_Transmit(&hRFSPI, txData, size, TIMEOUT_1_SEC);
@@ -259,7 +259,7 @@ void RFM96_WriteReg( uint8_t reg, uint8_t data )
 	//HACK: Wait for SPI transfer to complete
 	Delay_ms(1);
 	// Set CS high (inactive)
-	HAL_GPIO_WritePin(RF_CSN_GPIO_Port, RF_CSN_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(RF_CS_N_GPIO_Port, RF_CS_N_Pin, GPIO_PIN_SET);
 }
 
 
