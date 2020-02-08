@@ -19,9 +19,9 @@
 void RFM96_Init( void )
 {
 	// Assert Reset low on the RFM96
-	HAL_GPIO_WritePin(RF_RSTN_GPIO_Port, RF_RSTN_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_RESET);
 	Delay_ms(10);
-	HAL_GPIO_WritePin(RF_RSTN_GPIO_Port, RF_RSTN_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_SET);
 	Delay_ms(10);
 
 	// Set sleep mode, so we can also set LORA mode:

@@ -356,7 +356,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RF_RSTN_Pin|BUZZ_N_Pin|BUZZ_P_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, RF_RESET_N_Pin|BUZZ_N_Pin|BUZZ_P_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_RESET);
@@ -370,8 +370,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RF_RSTN_Pin BUZZ_N_Pin BUZZ_P_Pin */
-  GPIO_InitStruct.Pin = RF_RSTN_Pin|BUZZ_N_Pin|BUZZ_P_Pin;
+  /*Configure GPIO pins : RF_RESET_N_Pin BUZZ_N_Pin BUZZ_P_Pin */
+  GPIO_InitStruct.Pin = RF_RESET_N_Pin|BUZZ_N_Pin|BUZZ_P_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
