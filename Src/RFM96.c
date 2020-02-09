@@ -3,6 +3,9 @@
  *
  */
 
+#define SX1272      1  /* 915 MHz */
+#define SX1276      0  /* 434 MHz */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "RFM96.h"
@@ -40,20 +43,53 @@ void RFM96_Init( void )
     RFM96_WriteReg(RFM96_REG_0E_FIFO_TX_BASE_ADDR, 0x00);
     RFM96_WriteReg(RFM96_REG_0F_FIFO_RX_BASE_ADDR, 0x80);
 
-    // BW = 7: 125 kHz
-    // CodingRate = 1:  4/5 code rate
-    // ImplicitHeaderModeOn = 1, Implicit Header mode
+#if SX1276
+    // [7:4] BW = 0111: 125 kHz
+    // [3:1] CodingRate = 001:  4/5 code rate
+    // [0]   ImplicitHeaderModeOn = 1, Implicit Header mode
     RFM96_WriteReg(RFM96_REG_1D_MODEM_CONFIG1, 0x72);
-
+#endif
+#if SX1272
+    // [7:6] BW = 10: 500 kHz
+    // [5:3] CodingRate = 010:  4/6 code rate
+    // [2]   ImplicitHeaderModeOn = 1, Implicit Header mode
+    // [1]   RxPayloadCrc = 1 : Enabled
+    // [0]   LowDataRateOptimize = 0 : Disable
+    RFM96_WriteReg(RFM96_REG_1D_MODEM_CONFIG1, 0x96);
+#endif
+#if SX1276
     // SpreadingFactor = 7: 128 chips / symbol,
     // TxContinuousMode = 0 : Normal mode: a single packet is sent
     // RxPayloadCrcOn = 1 : CRC enabled
     // SymbTimeout[9:8] = 0
     RFM96_WriteReg(RFM96_REG_1E_MODEM_CONFIG2, 0x74);
-
+#endif
+#if SX1272
+    //TODO
+    // [7:4] SpreadingFactor = 7: 128 chips / symbol,
+    // [3]   TxContinuousMode = 0 : Normal mode: a single packet is sent
+    // [2]   AgCAutoOn  = 1 : CRC enabled
+    // [1:0] SymbTimeout[9:8] = 00
+    RFM96_WriteReg(RFM96_REG_1E_MODEM_CONFIG2, 0x72);
+#endif
+#if SX1276
     // LowDataRateOptimize = 1 : Enabled; mandated for when the symbol length exceeds 16ms
     // AgcAutoOn = 0 : LNA gain set by register LnaGain
     RFM96_WriteReg(RFM96_REG_26_MODEM_CONFIG3, 0x04);
+#endif
+#if SX1272
+    //TODO
+    // LowDataRateOptimize = 1 : Enabled; mandated for when the symbol length exceeds 16ms
+    // AgcAutoOn = 0 : LNA gain set by register LnaGain
+    RFM96_WriteReg(RFM96_REG_26_MODEM_CONFIG3, 0x04);
+#endif
+
+#if SX1272
+    // [7]  AUtomaticIFon = 0: Should be set to 0 after each reset
+    // [6:3] Reserved = 4: Default Value
+    // [2:0] Detect Optimize = 3: SF7 to 12
+    RFM96_WriteReg(RFM96_REG_31_DETECT_OPTIMIZ, 0x43);
+#endif
 
     // Preamble Length = 16;
     RFM96_WriteReg(RFM96_REG_20_PREAMBLE_MSB, 0x00);
@@ -70,14 +106,26 @@ void RFM96_Init( void )
     RFM96_WriteReg(RFM96_REG_07_FRF_MID, (frf >> 8) & 0xff);
     RFM96_WriteReg(RFM96_REG_08_FRF_LSB, frf & 0xff);
 
+#if SX1276
     // PaDac = 4 : Disables the +20dBm option on PA_BOOST pin
     RFM96_WriteReg(RFM96_REG_4D_PA_DAC, 0x04);
+#endif
 
+#if SX1276
     // PaSelect = 1 : PA_BOOST pin (instead of RFO pin).
     // MaxPower = 0 : Pmax=10.8+0.6*MaxPower [dBm]
     // Output Power = 8 : 10dBm from Pout=17-(15-OutputPower) if PaSelect = 1. RadioHead says this is 13 dBm, though
     //RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0x88);
     RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0xcf);
+#endif
+#if SX1272
+    //TODO
+    // PaSelect = 1 : PA_BOOST pin (instead of RFO pin).
+    // MaxPower = 0 : Pmax=10.8+0.6*MaxPower [dBm]
+    // Output Power = 8 : 10dBm from Pout=17-(15-OutputPower) if PaSelect = 1. RadioHead says this is 13 dBm, though
+    //RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0x88);
+    RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0xcf);
+#endif
 
     return;
 }
