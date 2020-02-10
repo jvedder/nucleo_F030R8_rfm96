@@ -71,7 +71,7 @@ static void MX_RTC_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_NVIC_Init(void);
 
-static uint8_t mode;
+static uint8_t tx_mode;
 static uint8_t buffer[64];
 static uint8_t toggle;
 
@@ -126,7 +126,7 @@ int main(void)
 
   RFM96_Init();
 
-  mode = (uint8_t) HAL_GPIO_ReadPin(MODE_JUMPER_GPIO_Port, MODE_JUMPER_Pin);
+  tx_mode = (uint8_t) HAL_GPIO_ReadPin(MODE_JUMPER_GPIO_Port, MODE_JUMPER_Pin);
 
   /* USER CODE END 2 */
 
@@ -134,7 +134,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   toggle = 0;
 
-  if (mode)
+  if (tx_mode)
   {
 	  // Tx Mode
 	  while (1)
