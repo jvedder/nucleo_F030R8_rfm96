@@ -21,8 +21,17 @@
 
 void RFM96_Init( void )
 {
-    print("Start Init w/o Reset");
-//    RF_TestSpi();
+    print("Start Init");
+    RF_TestSpi();
+
+    // Assert Reset on the RF chip
+    RFM96_SetResetPinLowZ();
+    Delay_ms(10);
+    RFM96_SetResetPinHighZ();
+    Delay_ms(10);
+
+    print("After Reset");
+    RF_TestSpi();
 
 //	// Assert Reset low on the RFM96 and release
 //	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_RESET);
@@ -172,7 +181,7 @@ void RFM96_Init( void )
     RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0x0F);
 #endif
 
-//    print("End Init");
+    print("End Init");
     RF_TestSpi();
 
     return;
@@ -356,6 +365,32 @@ void RFM96_WriteReg( uint8_t reg, uint8_t data )
 	Delay_ms(1);
 	// Set CS high (inactive)
 	HAL_GPIO_WritePin(RF_CS_N_GPIO_Port, RF_CS_N_Pin, GPIO_PIN_SET);
+}
+
+void RFM96_SetResetPinHighZ( void )
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    /*Configure GPIO pins : RF_RESET_Pin RF_DIO0_Pin */
+    GPIO_InitStruct.Pin = RF_RESET_Pin|RF_DIO0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+
+void RFM96_SetResetPinLowZ( void )
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    /*Configure GPIO pin Output Level */
+    HAL_GPIO_WritePin(GPIOA, RF_RESET_Pin, GPIO_PIN_SET);
+
+    /*Configure GPIO pin as output : RF_RESET_N_Pin */
+    GPIO_InitStruct.Pin = RF_RESET_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 

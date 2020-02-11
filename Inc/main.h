@@ -76,8 +76,8 @@ void beep(uint32_t duration_ms, uint8_t pitch);
 /* Private defines -----------------------------------------------------------*/
 #define USER_BUTTON_Pin GPIO_PIN_13
 #define USER_BUTTON_GPIO_Port GPIOC
-#define RF_RESET_N_Pin GPIO_PIN_0
-#define RF_RESET_N_GPIO_Port GPIOA
+#define RF_RESET_Pin GPIO_PIN_0
+#define RF_RESET_GPIO_Port GPIOA
 #define STLINK_TX_Pin GPIO_PIN_2
 #define STLINK_TX_GPIO_Port GPIOA
 #define STLINK_RX_Pin GPIO_PIN_3
