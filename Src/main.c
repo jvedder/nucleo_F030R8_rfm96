@@ -127,6 +127,7 @@ int main(void)
   RFM96_Init();
 
   tx_mode = (uint8_t) HAL_GPIO_ReadPin(MODE_JUMPER_GPIO_Port, MODE_JUMPER_Pin);
+  print1("TX Mode", tx_mode);
 
   /* USER CODE END 2 */
 
@@ -439,6 +440,13 @@ void printstr(const char *text, uint8_t * data)
 	  sprintf(msg, "%s: %s\r\n", text, (char *) data );
 	  msg_size = strlen(msg);
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
+}
+
+void printhex(uint8_t x)
+{
+      sprintf(msg, "%02X", (int) x );
+      msg_size = strlen(msg);
+      HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
 
 /* set pitch to 0,1,2,3 with 0 highest pitch */

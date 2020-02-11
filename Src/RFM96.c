@@ -21,11 +21,14 @@
 
 void RFM96_Init( void )
 {
-	// Assert Reset low on the RFM96 and release
-	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_RESET);
-	Delay_ms(10);
-	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_SET);
-	Delay_ms(10);
+    print("Start Init w/o Reset");
+//    RF_TestSpi();
+
+//	// Assert Reset low on the RFM96 and release
+//	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_RESET);
+//	Delay_ms(10);
+//	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_SET);
+//	Delay_ms(10);
 
 	// Set sleep mode, so we can also set LORA mode:
     RFM96_WriteReg(RFM96_REG_01_OP_MODE, RFM96_MODE_SLEEP | RFM96_LONG_RANGE_MODE);
@@ -71,7 +74,7 @@ void RFM96_Init( void )
     //TODO
     // [7:4] SpreadingFactor = 7: 128 chips / symbol,
     // [3]   TxContinuousMode = 0 : Normal mode: a single packet is sent
-    // [2]   AgCAutoOn  = 1 : CRC enabled
+    // [2]   AgcAutoOn  = 1 : CRC enabled
     // [1:0] SymbTimeout[9:8] = 00
     RFM96_WriteReg(RFM96_REG_1E_MODEM_CONFIG2, 0x74);
 #endif
@@ -97,7 +100,7 @@ void RFM96_Init( void )
     RFM96_WriteReg(RFM96_REG_31_DETECT_OPTIMIZ, 0xC3);
 #endif
 #if SX1272
-    // [7]  AUtomaticIFon = 0: Should be set to 0 after each reset
+    // [7]  AutomaticIFon = 0: Should be set to 0 after each reset
     // [6:3] Reserved = 0x4: Default Value
     // [2:0] Detect Optimize = 3: SF7 to SF12
     RFM96_WriteReg(RFM96_REG_31_DETECT_OPTIMIZ, 0x43);
@@ -105,9 +108,9 @@ void RFM96_Init( void )
 
 
     // [7:0] DetectionThreshold = 0x0A: SF7 to SF12
-    RFM96_WriteReg(RFM96_REG_37_DETECTION_THRESHOLD, 0x43);
+    RFM96_WriteReg(RFM96_REG_37_DETECTION_THRESHOLD, 0x0A);
 
-    // Preamble Length = 16;
+    // Preamble Length = 8;
     RFM96_WriteReg(RFM96_REG_20_PREAMBLE_MSB, 0x00);
     RFM96_WriteReg(RFM96_REG_21_PREAMBLE_LSB, 0x10);
 
@@ -168,6 +171,9 @@ void RFM96_Init( void )
     // [3:0] Output Power = 0xF : 14dBm; Pout = -1 + OutputPower(3:0) on RFIO= Pout = (15-1)
     RFM96_WriteReg(RFM96_REG_09_PA_CONFIG, 0x0F);
 #endif
+
+//    print("End Init");
+    RF_TestSpi();
 
     return;
 }
@@ -369,4 +375,24 @@ void Delay_ms( uint32_t delay_ms )
 	return;
 }
 
+// Debug Routines
+void RF_TestSpi( void )
+{
+    uint8_t i;
+    uint8_t v;
+    print("----TEST----");
+    for(i=0; i<8; i++)
+    {
+
+        v = (1 << i);
+        print1("Write", v);
+        RFM96_WriteReg(RFM96_REG_40_DIO_MAPPING1, v);
+        Delay_ms(1);
+        v =RFM96_ReadReg(RFM96_REG_40_DIO_MAPPING1);
+        print1("Read ", v);
+        Delay_ms(1);
+    }
+    print("------------");
+    return;
+}
 
