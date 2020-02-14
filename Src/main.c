@@ -123,6 +123,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   print("\r\nPOR");
+  print("Build: " __DATE__ ", " __TIME__);
   beep(250,1);
 
   RFM96_Init();

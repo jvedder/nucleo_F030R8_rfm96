@@ -22,7 +22,7 @@
 void RFM96_Init( void )
 {
     print("Start Init");
-    RF_TestSpi();
+    //RF_TestSpi();
 
     // Assert Reset on the RF chip
     RFM96_SetResetPinLowZ();
@@ -31,7 +31,7 @@ void RFM96_Init( void )
     Delay_ms(10);
 
     print("After Reset");
-    RF_TestSpi();
+    //RF_TestSpi();
 
 //	// Assert Reset low on the RFM96 and release
 //	HAL_GPIO_WritePin(RF_RESET_N_GPIO_Port, RF_RESET_N_Pin, GPIO_PIN_RESET);
@@ -59,16 +59,16 @@ void RFM96_Init( void )
 #if SX1276
     // [7:4] BW = 0111: 125 kHz
     // [3:1] CodingRate = 001:  4/5 code rate
-    // [0]   ImplicitHeaderModeOn = 1, Implicit Header mode
+    // [0]   ImplicitHeaderModeOn = 0, Explicit Header mode
     RFM96_WriteReg(RFM96_REG_1D_MODEM_CONFIG1, 0x72);
 #endif
 #if SX1272
-    // [7:6] BW = 10: 500 kHz
-    // [5:3] CodingRate = 010:  4/6 code rate
-    // [2]   ImplicitHeaderModeOn = 1, Implicit Header mode
+    // [7:6] BW = 00: 125Khz [10: 500 kHz]
+    // [5:3] CodingRate = 001:  4/5 code rate
+    // [2]   ImplicitHeaderModeOn = 0, Explicit Header mode
     // [1]   RxPayloadCrc = 1 : Enabled
-    // [0]   LowDataRateOptimize = 0 : Disable
-    RFM96_WriteReg(RFM96_REG_1D_MODEM_CONFIG1, 0x96);
+    // [0]   LowDataRateOptimize = 1 : Enabled
+    RFM96_WriteReg(RFM96_REG_1D_MODEM_CONFIG1, 0x0B);
 #endif
 
 
@@ -83,13 +83,13 @@ void RFM96_Init( void )
     //TODO
     // [7:4] SpreadingFactor = 7: 128 chips / symbol,
     // [3]   TxContinuousMode = 0 : Normal mode: a single packet is sent
-    // [2]   AgcAutoOn  = 1 : CRC enabled
+    // [2]   AgcAutoOn  = 1 : Set by internal AGC loop
     // [1:0] SymbTimeout[9:8] = 00
     RFM96_WriteReg(RFM96_REG_1E_MODEM_CONFIG2, 0x74);
 #endif
 
     // [7:0] SymbTimeout[7:0] = 0x05
-    RFM96_WriteReg(RFM96_REG_1F_SYMB_TIMEOUT_LSB, 0x75);
+    RFM96_WriteReg(RFM96_REG_1F_SYMB_TIMEOUT_LSB, 0x05);
 
 
 #if SX1276
@@ -109,19 +109,19 @@ void RFM96_Init( void )
     RFM96_WriteReg(RFM96_REG_31_DETECT_OPTIMIZ, 0xC3);
 #endif
 #if SX1272
-    // [7]  AutomaticIFon = 0: Should be set to 0 after each reset
+    // [7]  AutomaticIFon = 1: Should be set to 0 after each reset
     // [6:3] Reserved = 0x4: Default Value
     // [2:0] Detect Optimize = 3: SF7 to SF12
-    RFM96_WriteReg(RFM96_REG_31_DETECT_OPTIMIZ, 0x43);
+    RFM96_WriteReg(RFM96_REG_31_DETECT_OPTIMIZ, 0xC3);
 #endif
 
 
     // [7:0] DetectionThreshold = 0x0A: SF7 to SF12
     RFM96_WriteReg(RFM96_REG_37_DETECTION_THRESHOLD, 0x0A);
 
-    // Preamble Length = 8;
-    RFM96_WriteReg(RFM96_REG_20_PREAMBLE_MSB, 0x00);
-    RFM96_WriteReg(RFM96_REG_21_PREAMBLE_LSB, 0x10);
+    // Preamble Length = 16;
+    RFM96_WriteReg(RFM96_REG_20_PREAMBLE_MSB, 0x01);
+    RFM96_WriteReg(RFM96_REG_21_PREAMBLE_LSB, 0x00);
 
     //Maximum Payload Length (for header CRC ?!?!)
     RFM96_WriteReg(RFM96_REG_23_MAX_PAYLOAD_LENGTH, 0x40);
@@ -182,7 +182,7 @@ void RFM96_Init( void )
 #endif
 
     print("End Init");
-    RF_TestSpi();
+    //RF_TestSpi();
 
     return;
 }
@@ -221,7 +221,7 @@ void RFM96_Send(const uint8_t* data, uint8_t len)
 
 void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 {
-	print1("RxCurAddr", RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR));
+	//print1("RxCurAddr", RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR));
 
 	RFM96_WriteReg(RFM96_REG_01_OP_MODE, RFM96_MODE_RXCONTINUOUS);
 
@@ -249,7 +249,7 @@ void RFM96_Receive(uint8_t* data, uint8_t maxlen)
 	// Number of bytes received
 	uint8_t start = RFM96_ReadReg(RFM96_REG_10_FIFO_RX_CURRENT_ADDR);
 	uint8_t len = RFM96_ReadReg(RFM96_REG_13_RX_NB_BYTES);
-	print1("RxCurAddr: ", start);
+	//print1("RxCurAddr: ", start);
 	print1("RxNbrBytes:", len);
 
 	// get the read data
