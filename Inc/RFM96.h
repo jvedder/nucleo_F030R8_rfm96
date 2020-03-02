@@ -245,7 +245,6 @@ void RFM96_WriteReg( uint8_t reg, uint8_t data );
 void RFM96_SetResetPinHighZ( void );
 void RFM96_SetResetPinLowZ( void );
 
-void Delay_ms( uint32_t delay_ms );
 
 void RF_TestSpi( void );
 

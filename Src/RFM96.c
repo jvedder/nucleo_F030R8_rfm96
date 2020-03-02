@@ -394,22 +394,6 @@ void RFM96_SetResetPinLowZ( void )
 }
 
 
-void Delay_ms( uint32_t delay_ms )
-{
-	/**
-	 * This should correctly handle SysTic roll-overs.
-	 * See:
-	 *   https://stackoverflow.com/questions/61443/rollover-safe-timer-tick-comparisons
-	 */
-	uint32_t start_time_ms = HAL_GetTick();
-	while ( (HAL_GetTick() - start_time_ms) < delay_ms)
-	{
-		// spin wait
-	}
-
-	return;
-}
-
 // Debug Routines
 void RF_TestSpi( void )
 {

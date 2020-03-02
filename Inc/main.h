@@ -70,6 +70,7 @@ void print1(const char *text, uint8_t x );
 void print2(const char *text, uint8_t x, uint8_t y);
 void printstr(const char *text, uint8_t * data);
 void beep(uint32_t duration_ms, uint8_t pitch);
+void Delay_ms(uint32_t delay_ms);
 
 /* USER CODE END EFP */
 
@@ -82,14 +83,28 @@ void beep(uint32_t duration_ms, uint8_t pitch);
 #define STLINK_TX_GPIO_Port GPIOA
 #define STLINK_RX_Pin GPIO_PIN_3
 #define STLINK_RX_GPIO_Port GPIOA
+#define LCD_RS_Pin GPIO_PIN_4
+#define LCD_RS_GPIO_Port GPIOF
+#define LCD_RW_Pin GPIO_PIN_5
+#define LCD_RW_GPIO_Port GPIOF
 #define RF_SCK_Pin GPIO_PIN_5
 #define RF_SCK_GPIO_Port GPIOA
 #define RF_MISO_Pin GPIO_PIN_6
 #define RF_MISO_GPIO_Port GPIOA
 #define RF_MOSI_Pin GPIO_PIN_7
 #define RF_MOSI_GPIO_Port GPIOA
-#define GRN_LED_Pin GPIO_PIN_13
-#define GRN_LED_GPIO_Port GPIOB
+#define LCD_E_Pin GPIO_PIN_4
+#define LCD_E_GPIO_Port GPIOC
+#define GRN_LED_Pin GPIO_PIN_5
+#define GRN_LED_GPIO_Port GPIOC
+#define LCD_DB7_Pin GPIO_PIN_1
+#define LCD_DB7_GPIO_Port GPIOB
+#define LCD_DB4_Pin GPIO_PIN_13
+#define LCD_DB4_GPIO_Port GPIOB
+#define LCD_DB5_Pin GPIO_PIN_14
+#define LCD_DB5_GPIO_Port GPIOB
+#define LCD_DB6_Pin GPIO_PIN_15
+#define LCD_DB6_GPIO_Port GPIOB
 #define MODE_JUMPER_Pin GPIO_PIN_8
 #define MODE_JUMPER_GPIO_Port GPIOC
 #define BUZZ_N_Pin GPIO_PIN_8

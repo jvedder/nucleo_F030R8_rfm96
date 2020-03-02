@@ -27,6 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "RFM96.h"
+#include "lcd.h"
 
 
 /* USER CODE END Includes */
@@ -86,6 +87,7 @@ static uint8_t tx_count = 0;
 
 /* USER CODE END 0 */
 
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -125,6 +127,57 @@ int main(void)
   print("\r\nPOR");
   print("Build: " __DATE__ ", " __TIME__);
   beep(250,1);
+
+  LCD_Init();
+  LCD_ClearDisplay();
+  LCD_ReturnHome();
+
+  uint8_t c = 0x01;
+  LCD_SetCGramAddress(0x00);
+  for(uint8_t i=0; i<0x40; i++)
+  {
+      LCD_WriteData(c);
+      c = c << 1;
+      if (c == 0x20) c = 0x01;
+   }
+  LCD_SetDataAddress(0x00);
+  for(uint8_t i=0; i<0x10; i++)
+  {
+      LCD_WriteData(i);
+   }
+
+
+//  uint8_t  c = 0;
+//  for(uint8_t i=0; i<0x68; i++)
+//  {
+//      LCD_SetDataAddress(i);
+//      LCD_WriteData(c);
+//      ++c;
+//      if (i == 0x13) i= 0x3F;
+//      if (i == 0x53) i= 0x13;
+//      if (i == 0x27) i= 0x53;
+//  }
+
+//
+//  LCD_SetDataAddress(0x00);
+//  LCD_WriteData('7');
+//  LCD_WriteData('0');
+//  LCD_WriteData(LCD_CHAR_DEGREE);
+//  LCD_WriteData('F');
+//
+//  LCD_SetDataAddress(0x40);
+//  LCD_WriteData('6');
+//  LCD_WriteData('8');
+//  LCD_WriteData(LCD_CHAR_DEGREE);
+//  LCD_WriteData('F');
+//
+//  LCD_SetDataAddress(0x14);
+//  LCD_WriteData('7');
+//  LCD_WriteData('2');
+//  LCD_WriteData(LCD_CHAR_DEGREE);
+//  LCD_WriteData('F');
+
+  while(1);
 
   RFM96_Init();
 
@@ -177,6 +230,7 @@ int main(void)
   /* USER CODE END 3 */
 }
 
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -221,6 +275,7 @@ void SystemClock_Config(void)
   }
 }
 
+
 /**
   * @brief NVIC Configuration.
   * @retval None
@@ -234,6 +289,7 @@ static void MX_NVIC_Init(void)
   HAL_NVIC_SetPriority(SPI1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(SPI1_IRQn);
 }
+
 
 /**
   * @brief RTC Initialization Function
@@ -268,6 +324,7 @@ static void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 2 */
 
 }
+
 
 /**
   * @brief SPI1 Initialization Function
@@ -309,6 +366,7 @@ static void MX_SPI1_Init(void)
 
 }
 
+
 /**
   * @brief USART2 Initialization Function
   * @param None
@@ -344,6 +402,7 @@ static void MX_USART2_UART_Init(void)
 
 }
 
+
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -360,7 +419,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GRN_LED_GPIO_Port, GRN_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOF, LCD_RS_Pin|LCD_RW_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, LCD_E_Pin|GRN_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, LCD_DB7_Pin|LCD_DB4_Pin|LCD_DB5_Pin|LCD_DB6_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, BUZZ_N_Pin|BUZZ_P_Pin, GPIO_PIN_RESET);
@@ -380,12 +445,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : GRN_LED_Pin */
-  GPIO_InitStruct.Pin = GRN_LED_Pin;
+  /*Configure GPIO pins : LCD_RS_Pin LCD_RW_Pin */
+  GPIO_InitStruct.Pin = LCD_RS_Pin|LCD_RW_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GRN_LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LCD_E_Pin GRN_LED_Pin */
+  GPIO_InitStruct.Pin = LCD_E_Pin|GRN_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : LCD_DB7_Pin LCD_DB4_Pin LCD_DB5_Pin LCD_DB6_Pin */
+  GPIO_InitStruct.Pin = LCD_DB7_Pin|LCD_DB4_Pin|LCD_DB5_Pin|LCD_DB6_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : MODE_JUMPER_Pin */
   GPIO_InitStruct.Pin = MODE_JUMPER_Pin;
@@ -424,12 +503,14 @@ void print(const char *text)
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
 
+
 void print1(const char *text, uint8_t x)
 {
 	  sprintf(msg, "%s 0x%02X\r\n", text, (int) x );
 	  msg_size = strlen(msg);
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
+
 
 void print2(const char *text, uint8_t x, uint8_t y)
 {
@@ -438,6 +519,7 @@ void print2(const char *text, uint8_t x, uint8_t y)
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
 
+
 void printstr(const char *text, uint8_t * data)
 {
 	  sprintf(msg, "%s: %s\r\n", text, (char *) data );
@@ -445,12 +527,14 @@ void printstr(const char *text, uint8_t * data)
 	  HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
 
+
 void printhex(uint8_t x)
 {
       sprintf(msg, "%02X", (int) x );
       msg_size = strlen(msg);
       HAL_UART_Transmit(&huart2, (uint8_t *) msg, msg_size, TIMEOUT_1_SEC);
 }
+
 
 /* set pitch to 0,1,2,3 with 0 highest pitch */
 void beep(uint32_t duration_ms, uint8_t pitch)
@@ -483,6 +567,22 @@ void beep(uint32_t duration_ms, uint8_t pitch)
 	return;
 }
 
+
+void Delay_ms(uint32_t delay_ms)
+{
+    /**
+     * This should correctly handle SysTic roll-overs.
+     * See:
+     *   https://stackoverflow.com/questions/61443/rollover-safe-timer-tick-comparisons
+     */
+    uint32_t start_time_ms = HAL_GetTick();
+    while ( (HAL_GetTick() - start_time_ms) < delay_ms)
+    {
+        // spin wait
+    }
+
+    return;
+}
 /* USER CODE END 4 */
 
 /**
